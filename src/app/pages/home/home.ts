@@ -12,7 +12,8 @@ import { Link, LinkService } from '../../services/link.service';
   standalone: true
 })
 export class Home {
-  fb = inject(FormBuilder)
+  readonly fb = inject(FormBuilder)
+  readonly linkService = inject(LinkService)
   urlForm = this.fb.group({
     url: ['', [Validators.required, Validators.pattern('https?://.+')]]
   });
@@ -20,11 +21,10 @@ export class Home {
   isGenerating = signal(false);
   latestLink = signal<Link | null>(null);
 
-  constructor(private linkService: LinkService) {}
+  constructor() {}
 
   async onSubmit() {
     if (this.urlForm.valid) {
-      console.log('this.urlForm',this.urlForm)
       this.isGenerating.set(true);
       await new Promise(resolve => setTimeout(resolve, 1500));
 

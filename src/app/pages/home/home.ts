@@ -20,10 +20,10 @@ export class Home {
 
   isGenerating = signal(false);
   latestLink = signal<Link | null>(null);
-
+  isCopied = signal(false);
   constructor() {}
 
-  async onSubmit() {
+  protected async onSubmit() {
     if (this.urlForm.valid) {
       this.isGenerating.set(true);
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -33,5 +33,12 @@ export class Home {
       this.isGenerating.set(false);
       this.urlForm.reset();
     }
+  }
+
+  protected copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text).then(() => {
+      this.isCopied.set(true);
+      setTimeout(() => this.isCopied.set(false), 2000);
+    });
   }
 }

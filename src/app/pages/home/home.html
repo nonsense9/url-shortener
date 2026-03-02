@@ -17,6 +17,12 @@
         {{ isGenerating() ? 'Checking...' : 'Shorten' }}
       </button>
     </div>
+    <p class="text-red-500 text-sm pl-1">
+      @if (urlForm.get('url')?.hasError('pattern')) {
+        Please enter a valid URL starting with http:// or https://
+      }
+    </p>
+
   </form>
 
   @if (latestLink()) {

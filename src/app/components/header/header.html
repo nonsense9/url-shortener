@@ -1,28 +1,34 @@
-<header class="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm">
+<header class="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm" role="banner">
   <div class="max-w-4xl mx-auto px-6 flex items-center justify-between h-16">
 
-    <a routerLink="/" class="text-xl font-bold text-blue-600 tracking-tight">
+    <a
+      routerLink="/"
+      aria-label="Shortly — home page"
+      class="text-xl font-bold text-blue-600 tracking-tight rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 transition-all"
+    >
       shortly
     </a>
 
-
-    <nav class="flex items-center gap-1">
+    <nav class="flex items-center gap-1" aria-label="Main navigation">
       <a
         routerLink="/"
         routerLinkActive="text-blue-600 bg-blue-50"
+        #rlaGenerate="routerLinkActive"
+        class="px-4 py-2 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600 transition-all"
         [routerLinkActiveOptions]="{ exact: true }"
-        class="px-4 py-2 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all"
+        [attr.aria-current]="rlaGenerate.isActive ? 'page' : null"
       >
         Generate
       </a>
       <a
         routerLink="/link"
         routerLinkActive="text-blue-600 bg-blue-50"
-        class="px-4 py-2 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all"
+        #rlaLinks="routerLinkActive"
+        class="px-4 py-2 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600 transition-all"
+        [attr.aria-current]="rlaLinks.isActive ? 'page' : null"
       >
         My Links
       </a>
     </nav>
-
   </div>
 </header>

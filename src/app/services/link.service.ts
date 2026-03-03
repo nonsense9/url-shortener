@@ -47,14 +47,73 @@ export class LinkService {
         ],
         visitors: { unique: 85, returning: 39 }
       }
+    },
+    {
+      id: '2',
+      originalUrl: 'https://github.com',
+      shortUrl: 'link.eu/git8',
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      clicks: 452,
+      analytics: {
+        clicksTrend: [
+          { date: '2026-02-25', count: 45 },
+          { date: '2026-02-26', count: 68 },
+          { date: '2026-02-27', count: 55 },
+          { date: '2026-02-28', count: 85 },
+          { date: '2026-03-01', count: 72 },
+          { date: '2026-03-02', count: 90 },
+          { date: '2026-03-03', count: 37 },
+        ],
+        devices: [
+          { type: 'Mobile', percentage: 30 },
+          { type: 'Desktop', percentage: 70 }
+        ],
+        sources: [
+          { name: 'Direct', percentage: 20 },
+          { name: 'Social', percentage: 60 },
+          { name: 'Referral', percentage: 20 }
+        ],
+        visitors: { unique: 310, returning: 142 }
+      }
+    },
+    {
+      id: '3',
+      originalUrl: 'https://angular.dev',
+      shortUrl: 'link.eu/ng21',
+      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      clicks: 171,
+      analytics: {
+        clicksTrend: [
+          { date: '2026-02-25', count: 42 },
+          { date: '2026-02-26', count: 38 },
+          { date: '2026-02-27', count: 35 },
+          { date: '2026-02-28', count: 22 },
+          { date: '2026-03-01', count: 15 },
+          { date: '2026-03-02', count: 12 },
+          { date: '2026-03-03', count: 7 },
+        ],
+        devices: [
+          { type: 'Mobile', percentage: 50 },
+          { type: 'Desktop', percentage: 50 }
+        ],
+        sources: [
+          { name: 'Direct', percentage: 50 },
+          { name: 'Social', percentage: 10 },
+          { name: 'Referral', percentage: 40 }
+        ],
+        visitors: { unique: 60, returning: 29 }
+      }
     }
   ]);
+  static generateId() {
+    return Math.random().toString(36).substring(2, 9)
+  }
 
   links = computed(() => this.linksSignal());
 
   addLink(originalUrl: string, email?: string) {
     const newLink: Link = {
-      id: Math.random().toString(36).substring(2, 9),
+      id: LinkService.generateId(),
       originalUrl,
       shortUrl: `link.eu/${Math.random().toString(36).substring(2, 6)}`,
       createdAt: new Date(),

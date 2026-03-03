@@ -2,93 +2,104 @@
   <h1 class="text-5xl font-extrabold text-center mb-8 text-slate-900">Shorten your links.</h1>
 
   <form (submit)="onSubmit()" class="space-y-4">
-    <div class="relative">
-      <label for="url" class="sr-only">Long URL to shorten</label>
-      <input
-        [formField]="urlForm.url"
-        [attr.aria-invalid]="urlForm.url().invalid() && urlForm.url().touched()"
-        id="url"
-        type="url"
-        autofocus
-        placeholder="Paste your long URL here..."
-        aria-describedby="url-error"
-        class="w-full p-5 pr-32 text-lg border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-all shadow-sm"
-      />
-      <button
-        [class.cursor-pointer]="urlForm.url().valid()"
-        [disabled]="urlForm.url().invalid() || isGenerating()"
-        [attr.aria-busy]="isGenerating()"
-        [attr.aria-label]="isGenerating() ? 'Shortening URL...' : 'Shorten URL'"
-        type="submit"
-        class="absolute right-2 top-2 bottom-2 px-6 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:bg-slate-300 transition-all flex items-center justify-center gap-2"
-      >
-        @if (isGenerating()) {
-          <div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
-               aria-hidden="true"></div>
-          <span>Shortening...</span>
-        } @else {
-          <span>Shorten</span>
-        }
-      </button>
-    </div>
-
-    <div id="url-error" class="min-h-[1.25rem]">
+    <div>
+      <div class="relative">
+        <label for="url-input" class="sr-only">Long URL to shorten</label>
+        <input
+          id="url-input"
+          type="url"
+          autofocus
+          placeholder="Paste your long URL here..."
+          aria-describedby="url-error"
+          class="w-full p-5 pr-32 text-lg border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:outline-none transition-all shadow-sm"
+          [formField]="urlForm.url"
+          [attr.aria-invalid]="urlForm.url().invalid() && urlForm.url().touched()"
+        />
+        <button
+          type="submit"
+          class="absolute right-2 top-2 bottom-2 px-6 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:bg-slate-300 transition-all flex items-center justify-center gap-2"
+          [class.cursor-pointer]="urlForm.url().valid()"
+          [disabled]="urlForm.url().invalid() || isGenerating()"
+          [attr.aria-busy]="isGenerating()"
+          [attr.aria-label]="isGenerating() ? 'Shortening URL...' : 'Shorten URL'"
+        >
+          @if (isGenerating()) {
+            <div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
+                 aria-hidden="true"></div>
+            <span>Shortening...</span>
+          } @else {
+            <span>Shorten</span>
+          }
+        </button>
+      </div>
       @if (urlForm.url().errors() && urlForm.url().touched()) {
-        @for (error of urlForm.url().errors(); track error.message) {
-          <p class="text-sm text-red-500 pl-1" role="alert">{{ error.message }}</p>
-        }
+        <div id="url-error" class="min-h-[1.25rem] mt-2">
+          @for (error of urlForm.url().errors(); track error.message) {
+            <p class="text-sm text-red-500 pl-1" role="alert">{{ error.message }}</p>
+          }
+        </div>
       }
     </div>
+
     @if (latestLink()) {
       <section class="mt-8 p-6 bg-green-50 border border-green-200 rounded-2xl animate-fade-in" aria-live="polite">
         <h2 class="text-sm text-green-700 font-semibold mb-2">Success! Your link is ready:</h2>
         <div class="flex items-center justify-between bg-white p-4 rounded-lg border border-green-100">
-        <span class="text-xl font-mono font-bold text-blue-600"
-              id="shortened-url-display">{{ latestLink()?.shortUrl }}</span>
+          <span class="text-xl font-mono font-bold text-blue-600"
+                id="shortened-url-display">{{ latestLink()?.shortUrl }}</span>
           <button
-            (click)="copyToClipboard(latestLink()?.shortUrl ?? '')"
-            [attr.aria-label]="isCopied() ? 'Link copied to clipboard' : 'Copy shortened link to clipboard'"
             type="button"
             class="text-slate-500 hover:text-slate-800 transition-colors cursor-pointer px-3 py-1 rounded-md focus:outline-2 focus:outline-blue-500"
+            (click)="copyToClipboard(latestLink()?.shortUrl ?? '')"
+            [attr.aria-label]="isCopied() ? 'Link copied to clipboard' : 'Copy shortened link to clipboard'"
           >
             {{ isCopied() ? '✓ Copied!' : 'Copy' }}
           </button>
         </div>
 
-        <div class="relative">
-          <div class="mt-6 border-t border-green-200 pt-4">
-            <label for="email" class="block text-sm font-medium text-slate-600 mb-2">Want tracking stats? Enter your
-                                                                                     email:</label>
+        <div class="mt-6 border-t border-green-200 pt-4">
+          <label for="email-input" class="block text-sm font-medium text-slate-600 mb-2">Want tracking stats? Enter your
+                                                                                         email:</label>
+          <div class="relative">
             <input
-              [formField]="urlForm.email"
-              id="email"
+              id="email-input"
               type="email"
               placeholder="email@example.com"
-              class="w-full p-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none transition-all"
+              class="w-full p-3 pr-24 text-base border border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all shadow-sm"
+              [formField]="emailForm.email"
             >
-            <button
-              (click)="onSendEmail()"
-              [disabled]="urlForm.email().invalid() && isSendingEmail()"
-              [class.cursor-pointer]="urlForm.email().valid()"
-              type="button"
-              class="absolute right-2 bottom-2 px-6 py-1 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:bg-slate-300 transition-all flex items-center justify-center gap-2"
-            >
-              @if (isSendingEmail()) {
-                <div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
-                     aria-hidden="true"></div>
-                <span>Sending...</span>
-              } @else {
-                <span>Send</span>
-              }
-            </button>
+            @if (emailForm.email().valid() && emailForm.email().value()) {
+              <button
+                type="button"
+                class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:bg-slate-300 transition-all cursor-pointer flex items-center justify-center gap-2"
+                (click)="onSendEmail()"
+                [disabled]="isSendingEmail()"
+                [attr.aria-busy]="isSendingEmail()"
+                [attr.aria-label]="isSendingEmail() ? 'Sending...' : 'Send'"
+              >
+                @if (isSendingEmail()) {
+                  <div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
+                       aria-hidden="true"></div>
+                  <span>Sending...</span>
+                } @else {
+                  <span>Send</span>
+                }
+              </button>
+            }
           </div>
 
         </div>
-        <div id="email-error" class="min-h-[1.25rem]">
-          @if (urlForm.email().errors() && urlForm.email().touched()) {
-            @for (error of urlForm.email().errors(); track error.message) {
+        <div id="email-error" class="mt-1 min-h-[1.25rem]">
+          @if (emailForm.email().errors() && emailForm.email().touched()) {
+
+            @for (error of emailForm.email().errors(); track error.message) {
               <p class="text-red-500 text-sm pl-1" role="alert">{{ error.message }}</p>
             }
+          }
+          @if (isEmailSent()) {
+            <p class="mt-2 text-green-600 text-sm font-semibold flex items-center gap-1 animate-fade-in">
+              <span>✓ You've been subscribed!</span>
+            </p>
           }
         </div>
       </section>

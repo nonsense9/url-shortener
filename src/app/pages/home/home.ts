@@ -3,70 +3,71 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Link, LinkService } from '../../services/link.service';
 import {
   email,
-  form, FormField,
-  PathKind, pattern,
-  required, SchemaPathTree, submit,
+  form,
+  FormField,
+  pattern,
+  required,
+  submit,
 } from '@angular/forms/signals';
 import { EmailService } from '../../services/email.service';
 
-interface UrlForm {
-  url: string;
-  email: string;
-}
-
 @Component({
   selector: 'app-home',
-  imports: [
-    ReactiveFormsModule,
-    FormField,
-    FormsModule
-  ],
+  imports: [ ReactiveFormsModule, FormField, FormsModule ],
   templateUrl: './home.html',
   styleUrl: './home.css',
-  standalone: true
+  standalone: true,
 })
 export class Home {
-  readonly linkService = inject(LinkService)
-  readonly emailService = inject(EmailService)
-  formModel = signal<UrlForm>({
-    email: '',
-    url: ''
-  });
+  readonly linkService = inject(LinkService);
+  readonly emailService = inject(EmailService);
+
+  urlModel = signal({ url: '' });
+  emailModel = signal({ email: '' });
   isGenerating = signal(false);
   isSendingEmail = signal(false);
+  isEmailSent = signal(false);
   latestLink = signal<Link | null>(null);
   isCopied = signal(false);
 
-  urlForm = form(this.formModel, (fieldPath: SchemaPathTree<UrlForm, PathKind.Root>) => {
-    required(fieldPath.url, { message: 'Url is required' });
-    pattern(fieldPath.url, () => new RegExp('https?://.+'), { message: 'Please enter a valid URL starting with http:// or https://' });
-    email(fieldPath.email, { message: 'Please enter a valid email' })
-  })
+  urlForm = form(this.urlModel, (fieldPath) => {
+    required(fieldPath.url, { message: 'URL is required' });
+    pattern(fieldPath.url, () => new RegExp('https?://.+'), {
+      message: 'Please enter a valid URL starting with http:// or https://',
+    });
+  });
 
-  constructor() {}
+  emailForm = form(this.emailModel, (fieldPath) => {
+    email(fieldPath.email, { message: 'Please enter a valid email' });
+  });
+
+  constructor() {
+  }
 
   protected async onSendEmail() {
-    const { email } = this.formModel();
-    if (this.urlForm.email().valid() && email) {
+    await submit(this.emailForm, async () => {
       this.isSendingEmail.set(true);
+      this.isEmailSent.set(false);
+      const { email } = this.emailModel();
       await this.emailService.sendEmail(email);
       this.isSendingEmail.set(false);
-      this.urlForm.email().reset('');
-    }
+      this.isEmailSent.set(true);
+      this.emailForm.email().reset('');
+
+      setTimeout(() => this.isEmailSent.set(false), 3000);
+    });
   }
 
   protected async onSubmit() {
-    if (this.urlForm.url().valid!) {
+    await submit(this.urlForm, async () => {
       this.isGenerating.set(true);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await submit(this.urlForm, async () => {
-        const { url } = this.formModel();
-        const result = this.linkService.addLink(url);
-        this.latestLink.set(result);
-        this.isGenerating.set(false);
-        this.urlForm.url().reset('');
-      })
-    }
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const { url } = this.urlModel();
+      const result = this.linkService.addLink(url);
+      this.latestLink.set(result);
+      this.isGenerating.set(false);
+      this.urlForm.url().reset('');
+    });
   }
 
   protected copyToClipboard(text: string) {

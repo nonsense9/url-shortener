@@ -51,4 +51,13 @@ export class LinkDetail {
 
     return points.join(' ');
   }
+
+  uniquePercent(visitors: { unique: number; returning: number } | undefined) {
+    const unique = visitors?.unique ?? 0;
+    const returning = visitors?.returning ?? 0;
+    const total = unique + returning;
+
+    if (total === 0) return 0;
+    return (unique / total) * 100;
+  }
 }

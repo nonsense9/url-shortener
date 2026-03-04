@@ -89,7 +89,7 @@
           </div>
 
         </div>
-        <div id="email-error" class="mt-1 min-h-[1.25rem]">
+        <div id="email-error" class="mt-2 min-h-[1.25rem]">
           @if (emailForm.email().errors() && emailForm.email().touched()) {
 
             @for (error of emailForm.email().errors(); track error.message) {

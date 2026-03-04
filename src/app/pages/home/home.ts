@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Link, LinkService } from '../../services/link.service';
 import {
   email,
@@ -13,14 +13,14 @@ import { EmailService } from '../../services/email.service';
 
 @Component({
   selector: 'app-home',
-  imports: [ ReactiveFormsModule, FormField, FormsModule ],
+  imports: [ FormField, FormsModule ],
   templateUrl: './home.html',
   styleUrl: './home.css',
   standalone: true,
 })
 export class Home {
-  readonly linkService = inject(LinkService);
-  readonly emailService = inject(EmailService);
+  private readonly linkService = inject(LinkService);
+  private readonly emailService = inject(EmailService);
 
   urlModel = signal({ url: '' });
   emailModel = signal({ email: '' });
@@ -41,32 +41,34 @@ export class Home {
     email(fieldPath.email, { message: 'Please enter a valid email' });
   });
 
-  constructor() {
-  }
-
   protected async onSendEmail() {
     await submit(this.emailForm, async () => {
       this.isSendingEmail.set(true);
-      this.isEmailSent.set(false);
-      const { email } = this.emailModel();
-      await this.emailService.sendEmail(email);
-      this.isSendingEmail.set(false);
-      this.isEmailSent.set(true);
-      this.emailForm.email().reset('');
-
-      setTimeout(() => this.isEmailSent.set(false), 3000);
+      try {
+        const { email } = this.emailModel();
+        await this.emailService.sendEmail(email);
+        this.isEmailSent.set(true);
+        this.emailForm.email().reset('');
+        setTimeout(() => this.isEmailSent.set(false), 3000);
+      } finally {
+        this.isSendingEmail.set(false);
+      }
     });
   }
 
   protected async onSubmit() {
     await submit(this.urlForm, async () => {
       this.isGenerating.set(true);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      const { url } = this.urlModel();
-      const result = this.linkService.addLink(url);
-      this.latestLink.set(result);
-      this.isGenerating.set(false);
-      this.urlForm.url().reset('');
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
+        const { url } = this.urlModel();
+        const result = this.linkService.addLink(url);
+        this.latestLink.set(result);
+        this.urlForm.url().reset('');
+      } finally {
+        this.isGenerating.set(false);
+      }
     });
   }
 

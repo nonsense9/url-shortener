@@ -111,6 +111,10 @@ export class LinkService {
 
   links = computed(() => this.linksSignal());
 
+  deleteLink(id: string) {
+    this.linksSignal.update(current => current.filter(l => l.id !== id));
+  }
+
   addLink(originalUrl: string, email?: string) {
     const newLink: Link = {
       id: LinkService.generateId(),

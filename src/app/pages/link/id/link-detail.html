@@ -136,7 +136,7 @@
       <section aria-labelledby="device-dist-label" class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8">
         <h2 id="device-dist-label" class="text-lg font-bold text-slate-900 mb-6">Device Distribution</h2>
         <div class="space-y-5">
-          @for (device of l.analytics?.devices; track device.type) {
+          @for (device of l.analytics?.devices; track $index) {
             <div>
               <div class="flex justify-between text-sm mb-2">
                 <span class="font-medium text-slate-600">{{ device.type }}</span>
@@ -165,7 +165,7 @@
                class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8">
         <h2 id="traffic-sources-label" class="text-lg font-bold text-slate-900 mb-6">Traffic Sources</h2>
         <div class="space-y-5">
-          @for (source of l.analytics?.sources; track source.name) {
+          @for (source of l.analytics?.sources; track $index) {
             <div class="flex items-center justify-between group">
               <div class="flex items-center gap-3">
                 <div
